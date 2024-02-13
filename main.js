@@ -161,6 +161,7 @@ function validateInput(evt) {
   const inputValue = evt.target.value.replace(",", ".");
 
   if (
+    //se o campo possuir um valor inválido.
     (isNaN(inputValue) || Number(inputValue) <= 0) &&
     !parentElement.classList.contains("error")
   ) {
