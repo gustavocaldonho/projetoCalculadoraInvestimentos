@@ -1,7 +1,16 @@
 import { generateReturnsArray } from "./src/investmentGoals";
+import { Chart } from "chart.js/auto";
 
+const finalMoneyChart = document.getElementById("final-money-distribution");
+const progressionChart = document.getElementById("progression");
 const form = document.getElementById("Investment-form");
 const clearFormButton = document.getElementById("clear-form");
+let doughnutChartReference = {};
+let progressionChartReference = {};
+
+function formatCurrency(value) {
+  return value.toFixed(2); //especifica a quantidade de casas decimais.
+}
 
 function renderProgression(evt) {
   // Com o comando abaixo, impediremos que a página seja recarregada e que os campos do formulário sejam limpos.
@@ -11,6 +20,8 @@ function renderProgression(evt) {
   if (document.querySelector(".error")) {
     return;
   }
+
+  resetCharts(); //limpando os gráficos.
 
   // Uma vez que os elementos recuperados do form tenham o atributo 'name' especificado em suas tags, eles podem ser recuperados da seguinte forma:
   //   const startingAmount = Number(form["starting-amount"].value);
@@ -40,7 +51,83 @@ function renderProgression(evt) {
     returnRatePeriod
   );
 
-  console.log(returnsArray);
+  const finalInvestmentObject = returnsArray[returnsArray.length - 1];
+
+  doughnutChartReference = new Chart(finalMoneyChart, {
+    type: "doughnut",
+    data: {
+      labels: ["Total investido", "Rendimento", "Imposto"],
+      datasets: [
+        {
+          data: [
+            formatCurrency(finalInvestmentObject.investedAmount),
+            formatCurrency(
+              finalInvestmentObject.totalInterestReturns * (1 - taxRate / 100)
+            ),
+            formatCurrency(
+              finalInvestmentObject.totalInterestReturns * (taxRate / 100)
+            ),
+          ],
+          backgroundColor: [
+            "rgb(255, 99, 132)",
+            "rgb(54, 162, 235)",
+            "rgb(255, 205, 86)",
+          ],
+          hoverOffset: 4,
+        },
+      ],
+    },
+  });
+
+  progressionChartReference = new Chart(progressionChart, {
+    type: "bar",
+    data: {
+      labels: returnsArray.map((investmentObject) => investmentObject.month), //meses
+      datasets: [
+        {
+          label: "Total Investido",
+          data: returnsArray.map((investmentObject) =>
+            formatCurrency(investmentObject.investedAmount)
+          ), //criando uma segunda lista somente com os valores investidos de cada mês.
+          backgroundColor: "rgb(255, 99, 132)",
+        },
+        {
+          label: "Retorno de Investimento",
+          data: returnsArray.map((investmentObject) =>
+            formatCurrency(investmentObject.interestReturns)
+          ), //criando uma segunda lista somente com os retornos de investimentos de cada mês.
+          backgroundColor: "rgb(54, 162, 235)",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          stacked: true,
+        },
+        y: {
+          stacked: true,
+        },
+      },
+    },
+  });
+}
+
+function isObjectEmpty(obj) {
+  // 'Object.keys' retorna uma lista com todas as chaves do objeto (se o objeto estiver vazio, retorna uma lista vazia, já que não possui chaves).
+  return Object.keys(obj).length === 0;
+}
+
+function resetCharts() {
+  // Quando os dois gráficos precisarem ser limpos.
+  if (
+    !isObjectEmpty(doughnutChartReference) &&
+    !isObjectEmpty(progressionChartReference)
+  ) {
+    doughnutChartReference.destroy();
+    progressionChartReference.destroy();
+  }
 }
 
 function clearForm() {
@@ -49,6 +136,8 @@ function clearForm() {
   form["time-amount"].value = "";
   form["return-rate"].value = "";
   form["tax-rate"].value = "";
+
+  resetCharts();
 
   // Retorna todos os elementos que se adequam com a pesquisa indicada.
   const errorInputsContainers = document.querySelectorAll(".error");
