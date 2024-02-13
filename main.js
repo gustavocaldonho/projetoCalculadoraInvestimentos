@@ -96,7 +96,7 @@ function validateInput(evt) {
 for (const formElement of form) {
   // Todos os campos relevantes são inputs e possuem a tag 'name'.
   if (formElement.tagName === "INPUT" && formElement.hasAttribute("name")) {
-    // Retorna um objeto para a função 'validateInput.
+    // Retorna um objeto para a função 'validateInput'.
     formElement.addEventListener("blur", validateInput);
   }
 }
