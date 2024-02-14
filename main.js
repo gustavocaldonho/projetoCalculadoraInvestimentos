@@ -192,5 +192,5 @@ for (const formElement of form) {
 }
 
 // Retorna um objeto, sendo este passado para a função 'renderProgression'.
-form.addEventListener("submit", renderProgression);
+// form.addEventListener("submit", renderProgression);
 clearFormButton.addEventListener("click", clearForm);
