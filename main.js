@@ -194,9 +194,9 @@ function validateInput(evt) {
   const inputValue = evt.target.value.replace(",", ".");
 
   if (
-    //se o campo possuir um valor inválido.
-    (isNaN(inputValue) || Number(inputValue) <= 0) &&
-    !parentElement.classList.contains("error")
+    // Se o campo possuir um valor inválido.
+    !parentElement.classList.contains("error") &&
+    (isNaN(inputValue) || Number(inputValue) <= 0)
   ) {
     // Objetivo: <p class="text-red-500">Insira um valor numérico e maior do que zero</p>;
     const errorTextElement = document.createElement("p"); //criando o elemento '<p></p>'.
